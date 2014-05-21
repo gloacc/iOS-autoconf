@@ -1,8 +1,13 @@
 #!/bin/sh
 
+# The device's architecture
+export ARCH="x86_64"
+
 # SDK setup
-export SDKVER="5.1"
+export SDKVER="7.1"
 export DEVROOT="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer"
+export GCCROOT="/Applications/Xcode.app/Contents/Developer"
+#export SDKROOT="$DEVROOT/SDKs/iPhoneOS$SDKVER.sdk"
 export SDKROOT="$DEVROOT/SDKs/iPhoneSimulator$SDKVER.sdk"
 
 export PREFIX="/opt/iphone-simulator-$SDKVER"
@@ -24,26 +29,22 @@ if [ ! \( -x "./configure" \) ] ; then
 fi
 
 # Binaries
-export CPP="$DEVROOT/usr/bin/gcc -E"
-export CC="$DEVROOT/usr/bin/gcc"
-export CXX="$DEVROOT/usr/bin/g++"
-export LD="$DEVROOT/usr/bin/ld"
+export CPP="$GCCROOT/usr/bin/gcc -E"
+export CC="$GCCROOT/usr/bin/gcc"
+export CXX="$GCCROOT/usr/bin/g++"
+export LD="$GCCROOT/usr/bin/ld"
 
 export PKG_CONFIG_PATH="$SDKROOT/usr/lib/pkgconfig":"$PREFIX/lib/pkgconfig"
 
 # Flags
-export CPPFLAGS="-arch i386 -isysroot $SDKROOT -I$PREFIX/include"
-export CFLAGS="$CPPFLAGS -std=c99 -pipe -no-cpp-precomp"
-export CXXFLAGS="$CPPFLAGS -pipe -no-cpp-precomp"
-export LDFLAGS="-arch i386 -isysroot $SDKROOT -L$PREFIX/lib"
-
-# The simulator's architecture
-export ARCH="arm-apple-darwin10"
+export CPPFLAGS="-arch x86_64 -isysroot $SDKROOT -I$PREFIX/include "
+export CFLAGS="$CPPFLAGS -std=c99 -pipe -no-cpp-precomp -miphoneos-version-min=7.0"
+export CXXFLAGS="$CPPFLAGS -I$SDKROOT/usr/include/c++/4.2.1/$ARCH -pipe -no-cpp-precomp -miphoneos-version-min=7.0"
+export LDFLAGS="-arch x86_64 -isysroot $SDKROOT -L$PREFIX/lib"
 
 # Run configure 
 ./configure \
 	--prefix="$PREFIX" \
-	--build=i386-apple-darwin10 \
 	--host="$ARCH" \
 	--enable-static \
 	--disable-shared $@
